@@ -55,3 +55,29 @@ def test_unknown_brand_still_valid_if_luhn_passes():
     r = validate_credit_card(num)
     assert r.valid is True
     assert r.extras["brand"] is None
+
+
+def test_diners_36_prefix_14_digits():
+    """Lines 100-101: Diners Club starting with '36', length 14."""
+    # 36000000000008 is Luhn-valid.
+    r = validate_credit_card("36000000000008")
+    assert r.valid is True
+    assert r.extras["brand"] == "diners"
+
+
+def test_diners_38_prefix_14_digits():
+    """Lines 100-101: Diners Club starting with '38', length 14."""
+    # 38000000000006 is Luhn-valid.
+    r = validate_credit_card("38000000000006")
+    assert r.valid is True
+    assert r.extras["brand"] == "diners"
+
+
+def test_14_digit_non_diners_non_jcb_falls_through():
+    """Branch 100->104: length 14, prefix not in 36/38 and not 300-305 — falls
+    through past the Diners check to the JCB/None path. brand should be None.
+    """
+    # 70000000000005 — 14 digits, prefix '70', Luhn-valid.
+    r = validate_credit_card("70000000000005")
+    assert r.valid is True
+    assert r.extras["brand"] is None

@@ -89,7 +89,7 @@ def validate_cnpj(value: str) -> ValidationResult:
         cnpj_format = "legacy"
     elif _ALNUM_BASE_RE.match(base):
         cnpj_format = "alphanumeric"
-    else:
+    else:  # pragma: no cover - defensive; base is always [A-Z0-9]{12} given prior filters
         return ValidationResult(
             valid=False,
             raw=raw,

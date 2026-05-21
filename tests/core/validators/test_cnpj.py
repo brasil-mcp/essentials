@@ -50,3 +50,16 @@ def test_alphanumeric_format_preserved():
     assert r.valid
     assert r.extras["format"] == "alphanumeric"
     assert r.formatted is not None
+
+
+def test_dv_not_digit_rejected():
+    """Line 78: when the two check-digit positions (12-13) contain a letter,
+    the CNPJ is rejected with INVALID_FORMAT — DVs must always be numeric
+    even in the new alphanumeric format (per RF NT COCAD/SUARA 49/2024).
+    """
+    # Base 12 chars + two letters where DVs should be.
+    r = validate_cnpj("12ABC345001DAB")
+    assert r.valid is False
+    assert r.error is not None
+    assert str(r.error.code) == "INVALID_FORMAT"
+    assert "dígitos verificadores" in r.error.message_pt or "check digits" in r.error.message_en
