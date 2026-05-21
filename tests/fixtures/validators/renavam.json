@@ -1,0 +1,22 @@
+{
+  "valid": [
+    "12345678900",
+    "00012345679",
+    "98765432103",
+    "55550001112",
+    "01234567897",
+    "00234567899"
+  ],
+  "invalid": [
+    {"input": "", "code": "EMPTY_INPUT"},
+    {"input": "   ", "code": "EMPTY_INPUT"},
+    {"input": "12345", "code": "INVALID_LENGTH"},
+    {"input": "123456789012", "code": "INVALID_LENGTH"},
+    {"input": "abcdefghijk", "code": "INVALID_CHARACTER"},
+    {"input": "00000000000", "code": "REPEATED_DIGITS"},
+    {"input": "11111111111", "code": "REPEATED_DIGITS"},
+    {"input": "99999999999", "code": "REPEATED_DIGITS"},
+    {"input": "12345678901", "code": "INVALID_CHECKSUM"},
+    {"input": "00012345670", "code": "INVALID_CHECKSUM"}
+  ]
+}
