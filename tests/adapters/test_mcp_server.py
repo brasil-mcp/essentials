@@ -1,4 +1,5 @@
 """Tests para o adapter MCP (FastMCP)."""
+
 from __future__ import annotations
 
 import json

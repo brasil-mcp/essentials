@@ -1,4 +1,5 @@
 """Tests para o adapter CLI Typer."""
+
 from __future__ import annotations
 
 import json

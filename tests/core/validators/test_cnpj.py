@@ -5,9 +5,7 @@ import pytest
 
 from brasil_mcp.core.validators.cnpj import W1, W2, calc_digit, validate_cnpj
 
-_FIXTURES = json.loads(
-    (Path(__file__).parents[2] / "fixtures/validators/cnpj.json").read_text()
-)
+_FIXTURES = json.loads((Path(__file__).parents[2] / "fixtures/validators/cnpj.json").read_text())
 
 
 def _gen_valid_alphanum(base12: str) -> str:

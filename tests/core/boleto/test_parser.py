@@ -319,9 +319,7 @@ def test_fator_zero_returns_none():
 
 
 def test_arrecadacao_valid_segmento_eletrica_mod10():
-    linha = _build_arrecadacao48(
-        segmento="3", identificador="6", valor="00001234500"
-    )
+    linha = _build_arrecadacao48(segmento="3", identificador="6", valor="00001234500")
     r = parse_boleto(linha)
     assert r.valid is True, r.error
     assert r.extras["tipo"] == "arrecadacao"
@@ -343,9 +341,7 @@ def test_arrecadacao_valid_segmento_water_mod10():
 
 
 def test_arrecadacao_identificador_8_uses_mod11_and_no_valor():
-    linha = _build_arrecadacao48(
-        segmento="1", identificador="8", valor="00000099900"
-    )
+    linha = _build_arrecadacao48(segmento="1", identificador="8", valor="00000099900")
     r = parse_boleto(linha)
     assert r.valid is True, r.error
     assert r.extras["segmento_arrecadacao"] == "tributo_municipal"

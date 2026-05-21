@@ -89,7 +89,9 @@ def barcode_to_linha_bancario(barcode44: str) -> str:
     os DVs módulo 10 dos campos 1, 2 e 3.
     """
     if len(barcode44) != 44:
-        raise ValueError(f"código de barras bancário deve ter 44 dígitos; recebido {len(barcode44)}")
+        raise ValueError(
+            f"código de barras bancário deve ter 44 dígitos; recebido {len(barcode44)}"
+        )
 
     banco_moeda = barcode44[0:4]
     dv_geral = barcode44[4:5]

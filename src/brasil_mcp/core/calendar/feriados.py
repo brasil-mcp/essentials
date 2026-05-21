@@ -155,8 +155,7 @@ def listar_feriados(year: int, uf: str | None = None) -> dict[str, Any]:
     """
     national = _br_holidays(year, uf=None)
     feriados: list[dict[str, Any]] = [
-        {"date": d.isoformat(), "nome": nome, "esfera": "nacional"}
-        for d, nome in national.items()
+        {"date": d.isoformat(), "nome": nome, "esfera": "nacional"} for d, nome in national.items()
     ]
     national_dates = {d for d in national}
 
