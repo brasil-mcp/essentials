@@ -1,0 +1,25 @@
+{
+  "valid": [
+    {"input": "123456780191", "uf": "SP"},
+    {"input": "987654320221", "uf": "MG"},
+    {"input": "111222330388", "uf": "RJ"},
+    {"input": "998877662828", "uf": "Exterior"},
+    {"input": "000123450450", "uf": "RS"},
+    {"input": "444555661082", "uf": "GO"},
+    {"input": "000000060116", "uf": "SP"}
+  ],
+  "invalid": [
+    {"input": "", "code": "EMPTY_INPUT"},
+    {"input": "   ", "code": "EMPTY_INPUT"},
+    {"input": "12345", "code": "INVALID_LENGTH"},
+    {"input": "1234567890123", "code": "INVALID_LENGTH"},
+    {"input": "abcdefghijkl", "code": "INVALID_CHARACTER"},
+    {"input": "000000000000", "code": "REPEATED_DIGITS"},
+    {"input": "111111111111", "code": "REPEATED_DIGITS"},
+    {"input": "999999999999", "code": "REPEATED_DIGITS"},
+    {"input": "123456789999", "code": "INVALID_FORMAT"},
+    {"input": "123456789000", "code": "INVALID_FORMAT"},
+    {"input": "123456780192", "code": "INVALID_CHECKSUM"},
+    {"input": "987654320220", "code": "INVALID_CHECKSUM"}
+  ]
+}
