@@ -1,0 +1,21 @@
+{
+  "valid": [
+    "120.67890.12-5",
+    "123.45678.90-0",
+    "234.56789.01-3",
+    "555.50001.11-2",
+    "12067890125"
+  ],
+  "invalid": [
+    {"input": "", "code": "EMPTY_INPUT"},
+    {"input": "   ", "code": "EMPTY_INPUT"},
+    {"input": "123", "code": "INVALID_LENGTH"},
+    {"input": "123456789012", "code": "INVALID_LENGTH"},
+    {"input": "abc.defgh.ij-k", "code": "INVALID_CHARACTER"},
+    {"input": "000.00000.00-0", "code": "REPEATED_DIGITS"},
+    {"input": "111.11111.11-1", "code": "REPEATED_DIGITS"},
+    {"input": "999.99999.99-9", "code": "REPEATED_DIGITS"},
+    {"input": "120.67890.12-6", "code": "INVALID_CHECKSUM"},
+    {"input": "12345678901", "code": "INVALID_CHECKSUM"}
+  ]
+}
