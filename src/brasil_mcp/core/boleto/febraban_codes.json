@@ -1,0 +1,14 @@
+{
+  "001": {"ispb": "00000000", "nome": "Banco do Brasil S.A."},
+  "033": {"ispb": "90400888", "nome": "Banco Santander (Brasil) S.A."},
+  "077": {"ispb": "00416968", "nome": "Banco Inter S.A."},
+  "104": {"ispb": "00360305", "nome": "Caixa Econômica Federal"},
+  "208": {"ispb": "30306294", "nome": "Banco BTG Pactual S.A."},
+  "212": {"ispb": "92894922", "nome": "Banco Original S.A."},
+  "237": {"ispb": "60746948", "nome": "Banco Bradesco S.A."},
+  "260": {"ispb": "18236120", "nome": "Nu Pagamentos S.A."},
+  "341": {"ispb": "60701190", "nome": "Itaú Unibanco S.A."},
+  "422": {"ispb": "58160789", "nome": "Banco Safra S.A."},
+  "748": {"ispb": "01181521", "nome": "Sicredi"},
+  "756": {"ispb": "02038232", "nome": "Sicoob"}
+}
