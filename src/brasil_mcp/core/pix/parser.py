@@ -293,6 +293,15 @@ def generate_pix_brcode(
     if desc_clean:
         ma_tlvs.append(TLV(_MA_DESC, desc_clean))
     merchant_account_value = encode_tlvs(ma_tlvs)
+    # EMV TLV length field is 2 digits — any value > 99 chars produces a malformed
+    # BR Code that won't parse. Guard against chaves longas + descricao longa.
+    if len(merchant_account_value) > 99:
+        result["error"] = _error_dict(
+            ErrorCode.VALUE_TOO_LONG,
+            f"Chave + descrição excedem o limite EMV (99 chars no TLV 26; recebido {len(merchant_account_value)}). Reduza chave ou descrição.",
+            f"Chave + descrição exceed EMV limit (99 chars in TLV 26; got {len(merchant_account_value)}). Shorten chave or descricao.",
+        )
+        return result
 
     # Build additional-data sub-TLVs (tag 62) — txid (or "***" placeholder).
     ad_value = encode_tlvs([TLV(_AD_TXID, txid_clean if txid_clean else "***")])

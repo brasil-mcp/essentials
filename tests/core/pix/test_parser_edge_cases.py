@@ -249,6 +249,22 @@ def test_parse_pix_with_real_txid() -> None:
     assert parsed.extras["txid"] == "REALTXID"
 
 
+def test_generate_pix_merchant_account_value_too_long() -> None:
+    """Generate fails cleanly when chave + descricao would overflow the
+    2-digit EMV TLV length field on tag 26 (>99 chars). Previously this was a
+    silent malformed-brcode failure flagged by the coverage subagent."""
+    long_chave = "a" * 90
+    result = generate_pix_brcode(
+        chave=long_chave,
+        nome_beneficiario="Joao",
+        cidade="SP",
+        descricao="X" * 72,
+    )
+    assert result["brcode"] is None
+    assert result["error"] is not None
+    assert result["error"]["code"] == ErrorCode.VALUE_TOO_LONG.value
+
+
 def test_parse_pix_non_brl_currency_preserved() -> None:
     """Cover the `moeda != BRL` branch in parser (moeda_code preserved as-is)."""
     ma_value = encode_tlvs([TLV("00", "BR.GOV.BCB.PIX"), TLV("01", "user@example.com")])
