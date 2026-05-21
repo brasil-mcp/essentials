@@ -1,0 +1,31 @@
+{
+  "valid": [
+    {"input": "4111111111111111", "brand": "visa"},
+    {"input": "4012888888881881", "brand": "visa"},
+    {"input": "4111 1111 1111 1111", "brand": "visa"},
+    {"input": "4111111111119", "brand": "visa"},
+    {"input": "5555555555554444", "brand": "mastercard"},
+    {"input": "5105105105105100", "brand": "mastercard"},
+    {"input": "2221000000000009", "brand": "mastercard"},
+    {"input": "378282246310005", "brand": "amex"},
+    {"input": "6011111111111117", "brand": "discover"},
+    {"input": "30000000000004", "brand": "diners"},
+    {"input": "30569309025904", "brand": "diners"},
+    {"input": "3530111333300000", "brand": "jcb"},
+    {"input": "4011780000000006", "brand": "elo"},
+    {"input": "6362970000000003", "brand": "elo"},
+    {"input": "3841001234567894", "brand": "hipercard"},
+    {"input": "6062821234567890", "brand": "hipercard"}
+  ],
+  "invalid": [
+    {"input": "", "code": "EMPTY_INPUT"},
+    {"input": "   ", "code": "EMPTY_INPUT"},
+    {"input": "12345", "code": "INVALID_LENGTH"},
+    {"input": "12345678901234567890", "code": "INVALID_LENGTH"},
+    {"input": "4111-1111-1111-1111", "code": "INVALID_CHARACTER"},
+    {"input": "abcd1111 1111 1111", "code": "INVALID_CHARACTER"},
+    {"input": "4111111111111112", "code": "INVALID_CHECKSUM"},
+    {"input": "5555555555554443", "code": "INVALID_CHECKSUM"},
+    {"input": "378282246310006", "code": "INVALID_CHECKSUM"}
+  ]
+}
