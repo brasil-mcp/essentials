@@ -1,0 +1,20 @@
+{
+  "valid": [
+    "529.982.247-25",
+    "935.411.347-80",
+    "111.444.777-35",
+    "12345678909",
+    "390.533.447-05"
+  ],
+  "invalid": [
+    {"input": "", "code": "EMPTY_INPUT"},
+    {"input": "123", "code": "INVALID_LENGTH"},
+    {"input": "123456789012", "code": "INVALID_LENGTH"},
+    {"input": "abc.def.ghi-jk", "code": "INVALID_CHARACTER"},
+    {"input": "000.000.000-00", "code": "REPEATED_DIGITS"},
+    {"input": "111.111.111-11", "code": "REPEATED_DIGITS"},
+    {"input": "999.999.999-99", "code": "REPEATED_DIGITS"},
+    {"input": "529.982.247-26", "code": "INVALID_CHECKSUM"},
+    {"input": "123.456.789-00", "code": "INVALID_CHECKSUM"}
+  ]
+}
