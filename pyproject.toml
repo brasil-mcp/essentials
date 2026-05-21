@@ -43,10 +43,8 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/brasil_mcp"]
 
-[tool.hatch.build]
-include = [
-    "src/brasil_mcp/core/boleto/febraban_codes.json",
-]
+[tool.hatch.build.targets.wheel.force-include]
+"src/brasil_mcp/core/boleto/febraban_codes.json" = "brasil_mcp/core/boleto/febraban_codes.json"
 
 [dependency-groups]
 dev = [
