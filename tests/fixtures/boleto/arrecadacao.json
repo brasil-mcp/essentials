@@ -1,0 +1,23 @@
+{
+  "_comment": "Vetores SINT\u00c9TICOS constru\u00eddos aritmeticamente \u2014 zero PII.",
+  "vectors": [
+    {
+      "segmento": "3",
+      "identificador": "6",
+      "valor": "00001234500",
+      "linha_digitavel": "836000001237450000000007000000000000000000000000"
+    },
+    {
+      "segmento": "2",
+      "identificador": "6",
+      "valor": "00000099900",
+      "linha_digitavel": "826000000099990000000002000000000000000000000000"
+    },
+    {
+      "segmento": "1",
+      "identificador": "8",
+      "valor": "00000000000",
+      "linha_digitavel": "818000000004000000000001000000000001000000000001"
+    }
+  ]
+}
