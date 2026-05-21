@@ -57,8 +57,10 @@ _SEGMENTO_ARRECADACAO_MAP: dict[str, str] = {
 
 
 def _load_febraban_codes() -> dict[str, dict[str, str]]:
-    raw = resources.files("brasil_mcp.core.boleto").joinpath("febraban_codes.json").read_text(
-        encoding="utf-8"
+    raw = (
+        resources.files("brasil_mcp.core.boleto")
+        .joinpath("febraban_codes.json")
+        .read_text(encoding="utf-8")
     )
     return json.loads(raw)
 
@@ -205,9 +207,7 @@ def _parse_bancario_from_barcode(raw: str, barcode44: str) -> ValidationResult:
     return _validate_and_build_bancario(raw, linha47, barcode44)
 
 
-def _validate_and_build_bancario(
-    raw: str, linha47: str, barcode44: str
-) -> ValidationResult:
+def _validate_and_build_bancario(raw: str, linha47: str, barcode44: str) -> ValidationResult:
     # DV geral = barcode[4]; demais 43 dígitos formam o pacote para mod 11.
     dv_geral_actual = int(barcode44[4])
     pacote = barcode44[0:4] + barcode44[5:]

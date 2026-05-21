@@ -5,9 +5,7 @@ import pytest
 
 from brasil_mcp.core.validators.renavam import validate_renavam
 
-_FIXTURES = json.loads(
-    (Path(__file__).parents[2] / "fixtures/validators/renavam.json").read_text()
-)
+_FIXTURES = json.loads((Path(__file__).parents[2] / "fixtures/validators/renavam.json").read_text())
 
 
 @pytest.mark.parametrize("renavam", _FIXTURES["valid"])

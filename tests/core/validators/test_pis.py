@@ -5,9 +5,7 @@ import pytest
 
 from brasil_mcp.core.validators.pis import validate_pis
 
-_FIXTURES = json.loads(
-    (Path(__file__).parents[2] / "fixtures/validators/pis.json").read_text()
-)
+_FIXTURES = json.loads((Path(__file__).parents[2] / "fixtures/validators/pis.json").read_text())
 
 
 @pytest.mark.parametrize("pis", _FIXTURES["valid"])

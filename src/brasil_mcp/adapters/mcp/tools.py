@@ -1,4 +1,5 @@
 """Registra cada core function como uma MCP tool com schema apropriado."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -136,9 +137,7 @@ def register_tools(mcp: FastMCP) -> None:
     ) -> dict[str, Any]:
         """Conta dias úteis entre duas datas (inclui início, exclui fim por padrão)."""
         with track("contar_dias_uteis"):
-            return core_contar_dias_uteis(
-                start_date, end_date, uf=uf, inclusive_end=inclusive_end
-            )
+            return core_contar_dias_uteis(start_date, end_date, uf=uf, inclusive_end=inclusive_end)
 
     @mcp.tool()
     def listar_feriados(year: int, uf: str | None = None) -> dict[str, Any]:

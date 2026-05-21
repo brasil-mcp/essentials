@@ -1,4 +1,5 @@
 """CLI Typer: brasil-mcp <subcommand>. Subcomando 'serve' inicia stdio MCP."""
+
 from __future__ import annotations
 
 import json

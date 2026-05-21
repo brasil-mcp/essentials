@@ -119,9 +119,7 @@ class TestContarDiasUteis:
     def test_inclusive_end_conta_dia_util(self) -> None:
         # 2026-09-28 (segunda) a 2026-09-29 (terça), inclusive_end=True
         # → 2 dias úteis.
-        result = contar_dias_uteis(
-            "2026-09-28", "2026-09-29", inclusive_end=True
-        )
+        result = contar_dias_uteis("2026-09-28", "2026-09-29", inclusive_end=True)
         assert result["count"] == 2
         assert result["total_dias"] == 2
 
@@ -166,9 +164,7 @@ class TestListarFeriados:
         assert "nacional" in esferas
         assert "estadual" in esferas
         # 2026-07-09 deve estar marcado como estadual.
-        sp_estadual = [
-            f for f in result["feriados"] if f["esfera"] == "estadual"
-        ]
+        sp_estadual = [f for f in result["feriados"] if f["esfera"] == "estadual"]
         assert any(f["date"] == "2026-07-09" for f in sp_estadual)
 
     def test_ordenado_por_data(self) -> None:

@@ -75,11 +75,12 @@ def _get_client() -> Any | None:
     if _posthog_client is not None:
         return _posthog_client
     try:
-        from posthog import Posthog  # lazy import — só importa se opt-in
+        # Lazy import — só importa se opt-in. `posthog` é dep opcional.
+        import posthog  # pyright: ignore[reportMissingImports]
     except ImportError:
         return None
     api_key = os.environ.get("BRASIL_MCP_POSTHOG_KEY", "phc_PUBLIC_KEY_PLACEHOLDER")
-    _posthog_client = Posthog(api_key, host="https://us.i.posthog.com")
+    _posthog_client = posthog.Posthog(api_key, host="https://us.i.posthog.com")
     return _posthog_client
 
 

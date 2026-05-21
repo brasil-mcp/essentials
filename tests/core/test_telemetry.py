@@ -29,16 +29,12 @@ class TestIsEnabled:
         assert telemetry._is_enabled() is False
 
     @pytest.mark.parametrize("value", ["1", "true", "TRUE", "yes", "YES", "on", "ON", "True"])
-    def test_true_para_valores_truthy(
-        self, monkeypatch: pytest.MonkeyPatch, value: str
-    ) -> None:
+    def test_true_para_valores_truthy(self, monkeypatch: pytest.MonkeyPatch, value: str) -> None:
         monkeypatch.setenv("BRASIL_MCP_TELEMETRY", value)
         assert telemetry._is_enabled() is True
 
     @pytest.mark.parametrize("value", ["0", "false", "no", "off", "", "anything"])
-    def test_false_para_valores_falsy(
-        self, monkeypatch: pytest.MonkeyPatch, value: str
-    ) -> None:
+    def test_false_para_valores_falsy(self, monkeypatch: pytest.MonkeyPatch, value: str) -> None:
         monkeypatch.setenv("BRASIL_MCP_TELEMETRY", value)
         assert telemetry._is_enabled() is False
 
@@ -132,9 +128,7 @@ class TestInstallationId:
 
 
 class TestTrackContextManager:
-    def test_sucesso_chama_track_tool_call(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_sucesso_chama_track_tool_call(self, monkeypatch: pytest.MonkeyPatch) -> None:
         calls: list[dict] = []
 
         def fake_track(
@@ -163,9 +157,7 @@ class TestTrackContextManager:
         assert calls[0]["error_code"] is None
         assert calls[0]["latency_ms"] >= 0
 
-    def test_excecao_propaga_e_registra_falha(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_excecao_propaga_e_registra_falha(self, monkeypatch: pytest.MonkeyPatch) -> None:
         calls: list[dict] = []
 
         def fake_track(

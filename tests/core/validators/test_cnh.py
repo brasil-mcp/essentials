@@ -5,9 +5,7 @@ import pytest
 
 from brasil_mcp.core.validators.cnh import validate_cnh
 
-_FIXTURES = json.loads(
-    (Path(__file__).parents[2] / "fixtures/validators/cnh.json").read_text()
-)
+_FIXTURES = json.loads((Path(__file__).parents[2] / "fixtures/validators/cnh.json").read_text())
 
 
 @pytest.mark.parametrize("cnh", _FIXTURES["valid"])
