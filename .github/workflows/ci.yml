@@ -36,4 +36,4 @@ jobs:
         run: uv run pyright src
 
       - name: Pytest
-        run: uv run pytest --cov=brasil_mcp --cov-report=xml --cov-fail-under=85
+        run: uv run pytest --cov=brasil_mcp --cov-branch --cov-report=xml --cov-fail-under=100
