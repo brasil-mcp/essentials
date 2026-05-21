@@ -1,0 +1,15 @@
+{
+  "valid_legacy": [
+    "11.222.333/0001-81",
+    "11222333000181",
+    "60.701.190/0001-04",
+    "33.000.167/0001-01"
+  ],
+  "invalid": [
+    {"input": "", "code": "EMPTY_INPUT"},
+    {"input": "123", "code": "INVALID_LENGTH"},
+    {"input": "11.222.333/0001-82", "code": "INVALID_CHECKSUM"},
+    {"input": "00.000.000/0000-00", "code": "REPEATED_DIGITS"},
+    {"input": "@@.000.000/0001-81", "code": "INVALID_CHARACTER"}
+  ]
+}
