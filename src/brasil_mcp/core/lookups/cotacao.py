@@ -21,7 +21,7 @@ from brasil_mcp.core.lookups.http_client import (
 BCB_PTAX_URL = (
     "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/"
     "CotacaoMoedaPeriodoFechamento(codigoMoeda=@codigoMoeda,"
-    "dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)"
+    "dataInicialCotacao=@dataInicialCotacao,dataFinalCotacao=@dataFinalCotacao)"
 )
 CACHE_NAMESPACE = "cotacao_brl"
 
@@ -30,7 +30,10 @@ CACHE_TTL_HISTORICA = 365 * 24 * 60 * 60  # 1 year
 # Cotação "hoje" pode estar vazia até BCB publicar — cache curto.
 CACHE_TTL_RECENTE = 60 * 60  # 1 hour
 
-SUPPORTED_MOEDAS = ("USD", "EUR", "GBP", "JPY", "ARS", "CHF", "CAD", "AUD")
+# 10 moedas suportadas pelo BCB PTAX (descobertas via endpoint /Moedas).
+# Type A (direct BRL): CAD, CHF, DKK, JPY, NOK, SEK, USD.
+# Type B (paridade via USD): AUD, EUR, GBP.
+SUPPORTED_MOEDAS = ("USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "DKK", "NOK", "SEK")
 
 
 def lookup_cotacao_brl(moeda: str, data_cotacao: str | None = None) -> dict[str, Any]:
@@ -88,11 +91,9 @@ def lookup_cotacao_brl(moeda: str, data_cotacao: str | None = None) -> dict[str,
     start_date = target_date - timedelta(days=10)
     params = {
         "@codigoMoeda": f"'{moeda_upper}'",
-        "@dataInicial": f"'{start_date.strftime('%m-%d-%Y')}'",
+        "@dataInicialCotacao": f"'{start_date.strftime('%m-%d-%Y')}'",
         "@dataFinalCotacao": f"'{target_date.strftime('%m-%d-%Y')}'",
         "$format": "json",
-        "$top": "10",
-        "$orderby": "dataHoraCotacao desc",
     }
 
     try:
@@ -107,6 +108,9 @@ def lookup_cotacao_brl(moeda: str, data_cotacao: str | None = None) -> dict[str,
         )
 
     rows = body.get("value") or []
+    # BCB endpoint doesn't allow $orderby on dataHoraCotacao — sort client-side
+    # so the most recent quote on/before target_date is rows[0].
+    rows = sorted(rows, key=lambda r: r.get("dataHoraCotacao") or "", reverse=True)
     if not rows:
         return _err(
             raw_moeda,

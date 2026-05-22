@@ -5,6 +5,23 @@ Todas as mudanças importantes deste projeto serão documentadas aqui.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o
 projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.2.1] - 2026-05-22
+
+### Corrigido
+
+- `lookup_cotacao_brl`: bug crítico que retornava `NETWORK_ERROR` em todas as chamadas devido a 3 erros na URL/params do BCB Olinda:
+  - parâmetro era `dataInicial` mas o endpoint `CotacaoMoedaPeriodoFechamento` exige `dataInicialCotacao`;
+  - `$orderby=dataHoraCotacao desc` não é permitido pelo BCB — agora ordenação é client-side;
+  - `$top=10` causava HTTP 500 — removido.
+- Smoke-testado contra BCB live: USD R$5,03, EUR R$5,84 em 2026-05-20.
+
+### Modificado
+
+- `SUPPORTED_MOEDAS`: lista corrigida pelas 10 moedas que o BCB PTAX **de fato** publica vs BRL (descobertas via endpoint `/Moedas` do Olinda):
+  - **Adicionadas:** DKK, NOK, SEK (Coroas dinamarquesa, norueguesa, sueca — type A direct).
+  - **Removida:** ARS (BCB não publica peso argentino diretamente vs BRL — vira NOT_FOUND em qualquer data).
+  - Mantidas: USD, EUR, GBP, JPY, CHF, CAD, AUD.
+
 ## [0.2.0] - 2026-05-22
 
 ### Adicionado
@@ -60,6 +77,7 @@ projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - CLI Typer (`brasil-mcp`).
 - Telemetria opt-in via PostHog.
 
+[0.2.1]: https://github.com/brasil-mcp/essentials/releases/tag/v0.2.1
 [0.2.0]: https://github.com/brasil-mcp/essentials/releases/tag/v0.2.0
 [0.1.2]: https://github.com/brasil-mcp/essentials/releases/tag/v0.1.2
 [0.1.1]: https://github.com/brasil-mcp/essentials/releases/tag/v0.1.1

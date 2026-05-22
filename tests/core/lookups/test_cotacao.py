@@ -86,8 +86,15 @@ def test_caches_historical_aggressive():
 
 def test_supported_currencies_list():
     """All supported currencies route to PTAX without error code."""
-    for moeda in ["USD", "EUR", "GBP", "JPY", "ARS", "CHF", "CAD", "AUD"]:
+    for moeda in ["USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "DKK", "NOK", "SEK"]:
         with patch.object(cotacao_mod, "get_json", side_effect=lambda *a, **k: PTAX_USD):
             r = lookup_cotacao_brl(moeda)
         assert r["valid"] is True
         assert r["moeda"] == moeda
+
+
+def test_ars_no_longer_supported():
+    """ARS removed in 0.2.1 because BCB PTAX doesn't publish direct BRL quote."""
+    r = lookup_cotacao_brl("ARS")
+    assert r["valid"] is False
+    assert r["error"]["code"] == "UNSUPPORTED_FORMAT"

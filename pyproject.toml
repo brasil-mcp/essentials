@@ -1,6 +1,6 @@
 [project]
 name = "brasil-mcp-essentials"
-version = "0.2.0"
+version = "0.2.1"
 description = "MCP server brasileiro, privacy-first, CNPJ alfanumérico-ready. 14 utilities offline + 5 lookups online (CEP, banco, DDD, IBGE, cotação) para devs BR."
 readme = "README.md"
 license = { text = "MIT" }
