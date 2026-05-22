@@ -150,9 +150,7 @@ def test_cli_lookup_cotacao():
 
 @pytest.mark.asyncio
 async def test_mcp_lookup_endereco_cep():
-    payload = [
-        {"cep": "01310-200", "logradouro": "Av", "localidade": "SP", "uf": "SP"}
-    ]
+    payload = [{"cep": "01310-200", "logradouro": "Av", "localidade": "SP", "uf": "SP"}]
     with patch("brasil_mcp.core.lookups.cep.get_json", return_value=payload):
         server = build_server()
         result = await server.call_tool(

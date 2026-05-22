@@ -6,7 +6,6 @@ import pytest
 
 from brasil_mcp.core.validators.telefone import validate_telefone
 
-
 # ---- Successes ----
 
 
