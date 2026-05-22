@@ -283,3 +283,117 @@ def test_parse_pix_non_brl_currency_preserved() -> None:
     result = parse_pix_brcode(payload)
     assert result.valid is True
     assert result.extras["moeda"] == "840"
+
+
+# ------------ v0.1.2: defaults nome/cidade + chave normalization ------------
+
+
+def test_generate_pix_uses_default_nome_when_omitted() -> None:
+    """nome_beneficiario opcional — usa DEFAULT_NOME_BENEFICIARIO."""
+    from brasil_mcp.core.pix.parser import DEFAULT_NOME_BENEFICIARIO
+
+    out = generate_pix_brcode(chave="joao@example.com")
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.valid
+    assert parsed.extras["beneficiario"] == DEFAULT_NOME_BENEFICIARIO
+
+
+def test_generate_pix_uses_default_cidade_when_omitted() -> None:
+    from brasil_mcp.core.pix.parser import DEFAULT_CIDADE
+
+    out = generate_pix_brcode(chave="joao@example.com")
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.valid
+    assert parsed.extras["cidade"] == DEFAULT_CIDADE
+
+
+def test_generate_pix_uses_default_when_empty_string() -> None:
+    """Empty string is treated the same as None — defaults kick in."""
+    from brasil_mcp.core.pix.parser import DEFAULT_CIDADE, DEFAULT_NOME_BENEFICIARIO
+
+    out = generate_pix_brcode(chave="joao@example.com", nome_beneficiario="", cidade="")
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.extras["beneficiario"] == DEFAULT_NOME_BENEFICIARIO
+    assert parsed.extras["cidade"] == DEFAULT_CIDADE
+
+
+def test_generate_pix_explicit_nome_cidade_override_defaults() -> None:
+    out = generate_pix_brcode(
+        chave="joao@example.com",
+        nome_beneficiario="Empresa X",
+        cidade="Belo Horizonte",
+    )
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.extras["beneficiario"] == "EMPRESA X"
+    assert parsed.extras["cidade"] == "BELO HORIZONTE"
+
+
+def test_generate_pix_cpf_chave_stripped_in_brcode() -> None:
+    """CPF mascarado deve aparecer como dígitos puros no BR Code."""
+    out = generate_pix_brcode(chave="123.456.789-09")
+    assert "123.456.789-09" not in out["brcode"]
+    assert "12345678909" in out["brcode"]
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.extras["chave"] == "12345678909"
+    assert parsed.extras["tipo_chave"] == "cpf"
+
+
+def test_generate_pix_cnpj_legacy_stripped_in_brcode() -> None:
+    out = generate_pix_brcode(chave="33.000.167/0001-01")
+    assert "/" not in out["brcode"].replace("BR.GOV.BCB.PIX", "")
+    assert "33000167000101" in out["brcode"]
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.extras["chave"] == "33000167000101"
+    assert parsed.extras["tipo_chave"] == "cnpj"
+
+
+def test_generate_pix_cnpj_alfanumerico_stripped_and_uppercase() -> None:
+    """CNPJ alfanumérico com máscara deve virar uppercase sem separadores."""
+    out = generate_pix_brcode(chave="12.abc.345/01de-35")
+    parsed = parse_pix_brcode(out["brcode"])
+    # 14 alfanum chars, all uppercase
+    assert parsed.extras["chave"] == "12ABC34501DE35"
+    # tipo_chave atual só classifica como cnpj se for all-digits;
+    # alfanumérico vai cair em "aleatoria" — mas o brcode é válido.
+    assert parsed.valid
+
+
+def test_generate_pix_email_preserved() -> None:
+    out = generate_pix_brcode(chave="JOAO@example.com")
+    parsed = parse_pix_brcode(out["brcode"])
+    # Email NÃO é uppercase nem stripped — preservado como digitado
+    assert parsed.extras["chave"] == "JOAO@example.com"
+    assert parsed.extras["tipo_chave"] == "email"
+
+
+def test_generate_pix_telefone_preserved() -> None:
+    out = generate_pix_brcode(chave="+5511999999999")
+    parsed = parse_pix_brcode(out["brcode"])
+    assert parsed.extras["chave"] == "+5511999999999"
+    assert parsed.extras["tipo_chave"] == "telefone"
+
+
+def test_generate_pix_uuid_random_preserved() -> None:
+    uuid_key = "550e8400-e29b-41d4-a716-446655440000"
+    out = generate_pix_brcode(chave=uuid_key)
+    parsed = parse_pix_brcode(out["brcode"])
+    # UUID v4 tem hífens; não é 14 nem 11 chars stripped, então preserva
+    assert parsed.extras["chave"] == uuid_key
+    assert parsed.extras["tipo_chave"] == "aleatoria"
+
+
+def test_normalize_chave_unit() -> None:
+    from brasil_mcp.core.pix.parser import _normalize_chave
+
+    assert _normalize_chave("123.456.789-09") == "12345678909"
+    assert _normalize_chave("12345678909") == "12345678909"
+    assert _normalize_chave("33.000.167/0001-01") == "33000167000101"
+    assert _normalize_chave("33000167000101") == "33000167000101"
+    assert _normalize_chave("12.abc.345/01de-35") == "12ABC34501DE35"
+    assert _normalize_chave("joao@example.com") == "joao@example.com"
+    assert _normalize_chave("+5511999999999") == "+5511999999999"
+    assert _normalize_chave("550e8400-e29b-41d4-a716-446655440000") == (
+        "550e8400-e29b-41d4-a716-446655440000"
+    )
+    assert _normalize_chave("") == ""
+    assert _normalize_chave("   12345678909   ") == "12345678909"

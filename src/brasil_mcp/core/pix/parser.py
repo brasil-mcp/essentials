@@ -60,6 +60,39 @@ def _strip_accents_upper(s: str) -> str:
     return no_combining.upper()
 
 
+# Defaults for nome_beneficiario and cidade — used when the caller omits them.
+# BR Code spec marks tags 59 (name) and 60 (city) as required, but no Brazilian
+# bank validates the content against the registered PIX key holder — the app
+# overrides the displayed name with what the Banco Central has on file for that
+# key. So these defaults are safe even when the real holder is someone else.
+DEFAULT_NOME_BENEFICIARIO = "PAGAMENTO PIX"
+DEFAULT_CIDADE = "BRASIL"
+
+_CHAVE_MASK_CHARS = re.compile(r"[.\-/\s]")
+
+
+def _normalize_chave(chave: str) -> str:
+    """Strip mask separators when the chave shape is clearly CPF or CNPJ.
+
+    - CPF (11 digits after stripping `.`, `-`, `/`, whitespace) → digits only.
+    - CNPJ legacy (14 digits) → digits only.
+    - CNPJ alfanumérico (14 alfanumeric ASCII chars) → uppercase, no separators.
+    - Email (contains `@`), telefone (starts with `+`), UUID/random → returned
+      stripped of leading/trailing whitespace, otherwise unchanged.
+    """
+    if not chave:
+        return chave
+    trimmed = chave.strip()
+    if "@" in trimmed or trimmed.startswith("+"):
+        return trimmed
+    stripped = _CHAVE_MASK_CHARS.sub("", trimmed)
+    if len(stripped) == 11 and stripped.isdigit():
+        return stripped
+    if len(stripped) == 14 and stripped.isalnum() and stripped.isascii():
+        return stripped.upper()
+    return trimmed
+
+
 def _classify_chave(chave: str) -> str:
     if not chave:
         return "aleatoria"
@@ -251,14 +284,20 @@ def _error_dict(code: ErrorCode, pt: str, en: str, suggestion: str | None = None
 
 def generate_pix_brcode(
     chave: str,
-    nome_beneficiario: str,
-    cidade: str,
+    nome_beneficiario: str | None = None,
+    cidade: str | None = None,
     valor: int | None = None,
     txid: str | None = None,
     descricao: str | None = None,
     qr_format: str = "none",
 ) -> dict[str, Any]:
-    """Generate a static PIX BR Code from inputs. Returns a dict."""
+    """Generate a static PIX BR Code from inputs. Returns a dict.
+
+    nome_beneficiario and cidade are optional — when omitted (None or empty),
+    defaults DEFAULT_NOME_BENEFICIARIO and DEFAULT_CIDADE are used. The chave
+    is normalized: CPF and CNPJ keys have mask separators stripped; email,
+    telefone, and random/UUID keys are preserved as provided.
+    """
     result: dict[str, Any] = {
         "brcode": None,
         "qr_png_base64": None,
@@ -282,9 +321,11 @@ def generate_pix_brcode(
         )
         return result
 
-    chave_clean = chave.strip()
-    nome_clean = _truncate(_strip_accents_upper((nome_beneficiario or "").strip()), _MAX_NAME)
-    cidade_clean = _truncate(_strip_accents_upper((cidade or "").strip()), _MAX_CITY)
+    chave_clean = _normalize_chave(chave)
+    nome_source = (nome_beneficiario or "").strip() or DEFAULT_NOME_BENEFICIARIO
+    cidade_source = (cidade or "").strip() or DEFAULT_CIDADE
+    nome_clean = _truncate(_strip_accents_upper(nome_source), _MAX_NAME)
+    cidade_clean = _truncate(_strip_accents_upper(cidade_source), _MAX_CITY)
     desc_clean = _truncate(descricao.strip(), _MAX_DESC) if descricao else None
     txid_clean = _truncate(txid.strip(), _MAX_TXID) if txid else None
 
