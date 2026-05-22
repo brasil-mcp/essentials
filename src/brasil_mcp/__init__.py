@@ -1,3 +1,3 @@
-"""Brasil MCP Essentials — 14 utilities offline para devs BR."""
+"""Brasil MCP Essentials — 14 utilities offline + 5 lookups online para devs BR."""
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"

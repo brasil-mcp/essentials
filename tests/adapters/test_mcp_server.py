@@ -24,6 +24,11 @@ EXPECTED_TOOLS = {
     "proximo_dia_util",
     "contar_dias_uteis",
     "listar_feriados",
+    "lookup_cep",
+    "lookup_banco_febraban",
+    "lookup_ddd",
+    "lookup_ibge_municipio",
+    "lookup_cotacao_brl",
 }
 
 
@@ -32,11 +37,11 @@ def test_build_server_returns_fastmcp() -> None:
     assert isinstance(server, FastMCP)
 
 
-def test_server_registers_all_14_tools() -> None:
+def test_server_registers_all_19_tools() -> None:
     server = build_server()
     tools = server._tool_manager.list_tools()
     names = {t.name for t in tools}
-    assert len(tools) == 14, f"Esperava 14 tools, encontrei {len(tools)}: {names}"
+    assert len(tools) == 19, f"Esperava 19 tools, encontrei {len(tools)}: {names}"
     missing = EXPECTED_TOOLS - names
     assert not missing, f"Tools faltando: {missing}"
 

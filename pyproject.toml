@@ -1,7 +1,7 @@
 [project]
 name = "brasil-mcp-essentials"
-version = "0.1.2"
-description = "MCP server brasileiro, privacy-first, CNPJ alfanumérico-ready. 14 utilities offline para devs BR."
+version = "0.2.0"
+description = "MCP server brasileiro, privacy-first, CNPJ alfanumérico-ready. 14 utilities offline + 5 lookups online (CEP, banco, DDD, IBGE, cotação) para devs BR."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Brasil MCP" }]
@@ -22,6 +22,7 @@ dependencies = [
     "typer>=0.12.0",
     "segno>=1.6.0",
     "holidays>=0.50",
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]

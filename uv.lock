@@ -53,10 +53,11 @@ wheels = [
 
 [[package]]
 name = "brasil-mcp-essentials"
-version = "0.1.1"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "holidays" },
+    { name = "httpx" },
     { name = "mcp" },
     { name = "segno" },
     { name = "typer" },
@@ -80,6 +81,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "holidays", specifier = ">=0.50" },
+    { name = "httpx", specifier = ">=0.27" },
     { name = "mcp", specifier = ">=1.0.0" },
     { name = "posthog", marker = "extra == 'telemetry'", specifier = ">=3.5" },
     { name = "segno", specifier = ">=1.6.0" },

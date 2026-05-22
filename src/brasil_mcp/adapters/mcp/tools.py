@@ -19,6 +19,11 @@ from brasil_mcp.core.calendar.feriados import (
 from brasil_mcp.core.calendar.feriados import (
     proximo_dia_util as core_proximo_dia_util,
 )
+from brasil_mcp.core.lookups.banco import lookup_banco_febraban as core_lookup_banco
+from brasil_mcp.core.lookups.cep import lookup_cep as core_lookup_cep
+from brasil_mcp.core.lookups.cotacao import lookup_cotacao_brl as core_lookup_cotacao
+from brasil_mcp.core.lookups.ddd import lookup_ddd as core_lookup_ddd
+from brasil_mcp.core.lookups.ibge import lookup_ibge_municipio as core_lookup_ibge
 from brasil_mcp.core.pix.parser import (
     generate_pix_brcode as core_generate_pix,
 )
@@ -144,3 +149,33 @@ def register_tools(mcp: FastMCP) -> None:
         """Lista feriados brasileiros num ano. UF opcional para incluir estaduais."""
         with track("listar_feriados"):
             return core_listar_feriados(year, uf=uf)
+
+    @mcp.tool()
+    def lookup_cep(cep: str) -> dict[str, Any]:
+        """Consulta endereço de CEP brasileiro via ViaCEP (online). Retorna logradouro, bairro, cidade, UF, IBGE code, DDD. Resultado cacheado localmente por 30 dias."""
+        with track("lookup_cep"):
+            return core_lookup_cep(cep)
+
+    @mcp.tool()
+    def lookup_banco_febraban(codigo: str) -> dict[str, Any]:
+        """Consulta banco brasileiro por código FEBRABAN (3 dígitos) via BrasilAPI (online). Cobre 200+ bancos. Cacheado 7 dias."""
+        with track("lookup_banco_febraban"):
+            return core_lookup_banco(codigo)
+
+    @mcp.tool()
+    def lookup_ddd(ddd: str) -> dict[str, Any]:
+        """Consulta UF e lista de municípios por código DDD (2 dígitos) via BrasilAPI (online). Cacheado 90 dias."""
+        with track("lookup_ddd"):
+            return core_lookup_ddd(ddd)
+
+    @mcp.tool()
+    def lookup_ibge_municipio(nome: str, uf: str | None = None) -> dict[str, Any]:
+        """Consulta código IBGE de município brasileiro por nome (acento-insensível). UF opcional. Cacheado 30 dias."""
+        with track("lookup_ibge_municipio"):
+            return core_lookup_ibge(nome, uf=uf)
+
+    @mcp.tool()
+    def lookup_cotacao_brl(moeda: str, data_cotacao: str | None = None) -> dict[str, Any]:
+        """Consulta cotação PTAX BRL via Banco Central. Moedas: USD, EUR, GBP, JPY, ARS, CHF, CAD, AUD. data_cotacao opcional (default hoje). Cacheado 1h pra recente, 1 ano pra histórico."""
+        with track("lookup_cotacao_brl"):
+            return core_lookup_cotacao(moeda, data_cotacao=data_cotacao)

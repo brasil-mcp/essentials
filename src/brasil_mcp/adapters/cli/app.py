@@ -169,3 +169,52 @@ def cli_version() -> None:
     import brasil_mcp
 
     typer.echo(brasil_mcp.__version__)
+
+
+# ----- Lookups online (v0.2) -----
+
+
+@app.command("lookup-cep")
+def cli_lookup_cep(cep: str) -> None:
+    """Consulta endereço por CEP via ViaCEP (online)."""
+    from brasil_mcp.core.lookups.cep import lookup_cep
+
+    _emit(lookup_cep(cep))
+
+
+@app.command("lookup-banco-febraban")
+def cli_lookup_banco(codigo: str) -> None:
+    """Consulta banco brasileiro por código FEBRABAN via BrasilAPI (online)."""
+    from brasil_mcp.core.lookups.banco import lookup_banco_febraban
+
+    _emit(lookup_banco_febraban(codigo))
+
+
+@app.command("lookup-ddd")
+def cli_lookup_ddd(ddd: str) -> None:
+    """Consulta UF e municípios por código DDD via BrasilAPI (online)."""
+    from brasil_mcp.core.lookups.ddd import lookup_ddd
+
+    _emit(lookup_ddd(ddd))
+
+
+@app.command("lookup-ibge-municipio")
+def cli_lookup_ibge(
+    nome: str,
+    uf: str | None = typer.Option(None, help="UF pra restringir a busca"),
+) -> None:
+    """Consulta código IBGE de município por nome (online)."""
+    from brasil_mcp.core.lookups.ibge import lookup_ibge_municipio
+
+    _emit(lookup_ibge_municipio(nome, uf=uf))
+
+
+@app.command("lookup-cotacao-brl")
+def cli_lookup_cotacao(
+    moeda: str,
+    data: str | None = typer.Option(None, help="Data ISO YYYY-MM-DD; default hoje"),
+) -> None:
+    """Consulta cotação PTAX BRL no Banco Central (online). USD, EUR, GBP, JPY, ARS, CHF, CAD, AUD."""
+    from brasil_mcp.core.lookups.cotacao import lookup_cotacao_brl
+
+    _emit(lookup_cotacao_brl(moeda, data_cotacao=data))
