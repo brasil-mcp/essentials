@@ -5,6 +5,12 @@ Todas as mudanças importantes deste projeto serão documentadas aqui.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o
 projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.1.1] - 2026-05-22
+
+### Adicionado
+
+- Novo entry point `brasil-mcp-essentials` apontando direto para o MCP server stdio. Permite invocar via `uvx brasil-mcp-essentials` sem precisar de `--from`. Atalho ergonômico para MCP clients (Claude Desktop, Cursor, etc.) — os entry points existentes (`brasil-mcp`, `brasil-mcp-server`) continuam funcionando exatamente igual.
+
 ## [0.1.0] - 2026-05-21
 
 ### Adicionado
@@ -21,4 +27,5 @@ projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Telemetria opt-in via PostHog — anonymous metadata only, default OFF.
 - Suíte de 266 testes unitários cobrindo casos extremos.
 
+[0.1.1]: https://github.com/brasil-mcp/essentials/releases/tag/v0.1.1
 [0.1.0]: https://github.com/brasil-mcp/essentials/releases/tag/v0.1.0
