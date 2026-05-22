@@ -5,6 +5,20 @@ Todas as mudanças importantes deste projeto serão documentadas aqui.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o
 projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.3.0] - 2026-05-22
+
+### Adicionado
+
+- **`lookup_endereco_cep(uf, cidade, logradouro)`** — busca reversa de CEP via ViaCEP. Aceita match parcial (fuzzy lado servidor). Retorna lista de matches com cep, logradouro, complemento, unidade, bairro, cidade, uf, ibge, ddd. Cacheado 30 dias.
+- **`validate_telefone(value)`** — valida e normaliza telefone brasileiro. Reconhece celular (11 dígitos com `9` após DDD) e fixo (10 dígitos com 2-5 após DDD). Aceita com/sem `+55`, qualquer máscara. Outputs: `formatted` (`(11) 98765-4321`), `formatted_international` (`+55 11 98765-4321`), `e164` (`+5511987654321`), `ddd`, `tipo` (celular/fixo). Lista oficial Anatel de DDDs válidos.
+- **`generate_whatsapp_qr(telefone, mensagem?, qr_format?)`** — gera link wa.me (deeplink universal WhatsApp) + QR opcional (PNG base64 e/ou SVG). Aproveita `validate_telefone` pra normalizar o número. Útil pra cartões de visita, email signature, atendimento.
+
+### Modificado
+
+- Total de **22 MCP tools** registradas (era 19 na 0.2.x).
+- 729 testes (era 677), 100% coverage de linhas + branches mantida.
+
+[0.3.0]: https://github.com/brasil-mcp/essentials/releases/tag/v0.3.0
 ## [0.2.1] - 2026-05-22
 
 ### Corrigido

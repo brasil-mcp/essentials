@@ -218,3 +218,38 @@ def cli_lookup_cotacao(
     from brasil_mcp.core.lookups.cotacao import lookup_cotacao_brl
 
     _emit(lookup_cotacao_brl(moeda, data_cotacao=data))
+
+
+# ----- v0.3.0 -----
+
+
+@app.command("validate-telefone")
+def cli_validate_telefone(value: str) -> None:
+    """Valida e formata telefone brasileiro."""
+    from brasil_mcp.core.validators.telefone import validate_telefone
+
+    _emit(validate_telefone(value).to_dict())
+
+
+@app.command("lookup-endereco-cep")
+def cli_lookup_endereco_cep(
+    uf: str,
+    cidade: str,
+    logradouro: str,
+) -> None:
+    """Busca CEPs por endereço (UF + cidade + logradouro). ViaCEP (online)."""
+    from brasil_mcp.core.lookups.cep import lookup_endereco_cep
+
+    _emit(lookup_endereco_cep(uf, cidade, logradouro))
+
+
+@app.command("generate-whatsapp-qr")
+def cli_generate_whatsapp_qr(
+    telefone: str,
+    mensagem: str | None = typer.Option(None, help="Mensagem pré-preenchida"),
+    qr: str = typer.Option("none", help="Formato do QR: none|png|svg|both"),
+) -> None:
+    """Gera link wa.me + QR pra telefone brasileiro."""
+    from brasil_mcp.core.whatsapp.qr import generate_whatsapp_qr
+
+    _emit(generate_whatsapp_qr(telefone, mensagem, qr))

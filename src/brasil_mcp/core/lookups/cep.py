@@ -96,3 +96,126 @@ def _err(raw: str, code: ErrorCode, pt: str, en: str) -> dict[str, Any]:
         "raw": raw,
         "error": ErrorObj(code, pt, en).to_dict(),
     }
+
+
+# -------- Reverse lookup: endereço → lista de CEPs (via ViaCEP) --------
+
+# ViaCEP exige UF + cidade + logradouro, todos com ≥3 caracteres.
+VIACEP_REVERSE_URL = "https://viacep.com.br/ws/{uf}/{cidade}/{logradouro}/json/"
+REVERSE_CACHE_NAMESPACE = "endereco_cep"
+REVERSE_CACHE_TTL = 30 * 24 * 60 * 60  # 30 dias (mesma estabilidade do forward)
+
+_MIN_TERM_LEN = 3
+
+
+def lookup_endereco_cep(uf: str, cidade: str, logradouro: str) -> dict[str, Any]:
+    """Busca lista de CEPs que casam com (UF, cidade, logradouro) via ViaCEP.
+
+    Todos os 3 campos são obrigatórios. ViaCEP exige ≥3 caracteres em cada e
+    aplica fuzzy matching no logradouro (busca por substring case-insensitive
+    + accent-insensitive lado servidor).
+
+    Returns: { valid, count, matches: [{cep, logradouro, complemento, unidade,
+                                         bairro, cidade, uf, ibge, ddd}], raw, error }.
+    Cacheado localmente por 30 dias por tupla (uf, cidade, logradouro).
+    """
+    raw = {"uf": uf or "", "cidade": cidade or "", "logradouro": logradouro or ""}
+    uf_norm = (uf or "").strip().upper()
+    cidade_norm = (cidade or "").strip()
+    logradouro_norm = (logradouro or "").strip()
+
+    if not uf_norm or not cidade_norm or not logradouro_norm:
+        return _reverse_err(
+            raw,
+            ErrorCode.EMPTY_INPUT,
+            "uf, cidade e logradouro são obrigatórios.",
+            "uf, cidade and logradouro are required.",
+        )
+    if len(uf_norm) != 2:
+        return _reverse_err(
+            raw,
+            ErrorCode.INVALID_LENGTH,
+            f"UF deve ter 2 caracteres; recebido {len(uf_norm)}.",
+            f"UF must have 2 chars; got {len(uf_norm)}.",
+        )
+    if len(cidade_norm) < _MIN_TERM_LEN or len(logradouro_norm) < _MIN_TERM_LEN:
+        return _reverse_err(
+            raw,
+            ErrorCode.INVALID_LENGTH,
+            f"cidade e logradouro precisam de pelo menos {_MIN_TERM_LEN} caracteres cada (limite ViaCEP).",
+            f"cidade and logradouro need at least {_MIN_TERM_LEN} chars each (ViaCEP limit).",
+        )
+
+    cache_key = f"{uf_norm}|{cidade_norm.lower()}|{logradouro_norm.lower()}"
+    cached = cache.get(REVERSE_CACHE_NAMESPACE, cache_key)
+    if cached is not None:
+        return cached
+
+    # ViaCEP precisa de URL-encoded path segments. httpx faz isso ao passar como params,
+    # mas aqui são path components — formatamos manualmente usando urllib.
+    from urllib.parse import quote
+
+    url = VIACEP_REVERSE_URL.format(
+        uf=quote(uf_norm, safe=""),
+        cidade=quote(cidade_norm, safe=""),
+        logradouro=quote(logradouro_norm, safe=""),
+    )
+
+    try:
+        body = get_json(url)
+    except NotFoundError:
+        return _reverse_err(
+            raw, ErrorCode.NOT_FOUND, "Endereço não encontrado.", "Address not found."
+        )
+    except (NetworkError, UpstreamError) as exc:
+        return _reverse_err(
+            raw,
+            ErrorCode.NETWORK_ERROR,
+            f"Falha de rede ao consultar ViaCEP: {exc}",
+            f"Network failure querying ViaCEP: {exc}",
+        )
+
+    # ViaCEP signals "no results" with an empty list (200) OR object {"erro": true}.
+    if isinstance(body, dict) and body.get("erro"):
+        return _reverse_err(
+            raw, ErrorCode.NOT_FOUND, "Endereço não encontrado.", "Address not found."
+        )
+    if not isinstance(body, list) or not body:
+        return _reverse_err(
+            raw, ErrorCode.NOT_FOUND, "Endereço não encontrado.", "Address not found."
+        )
+
+    matches = [
+        {
+            "cep": (m.get("cep") or "").replace("-", ""),
+            "logradouro": m.get("logradouro") or None,
+            "complemento": m.get("complemento") or None,
+            "unidade": m.get("unidade") or None,
+            "bairro": m.get("bairro") or None,
+            "cidade": m.get("localidade") or None,
+            "uf": m.get("uf") or None,
+            "ibge": m.get("ibge") or None,
+            "ddd": m.get("ddd") or None,
+        }
+        for m in body
+        if isinstance(m, dict)
+    ]
+    result = {
+        "valid": True,
+        "count": len(matches),
+        "matches": matches,
+        "raw": raw,
+        "error": None,
+    }
+    cache.set_(REVERSE_CACHE_NAMESPACE, cache_key, result, ttl_seconds=REVERSE_CACHE_TTL)
+    return result
+
+
+def _reverse_err(raw: dict, code: ErrorCode, pt: str, en: str) -> dict[str, Any]:
+    return {
+        "valid": False,
+        "count": 0,
+        "matches": [],
+        "raw": raw,
+        "error": ErrorObj(code, pt, en).to_dict(),
+    }

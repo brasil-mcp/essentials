@@ -21,6 +21,7 @@ from brasil_mcp.core.calendar.feriados import (
 )
 from brasil_mcp.core.lookups.banco import lookup_banco_febraban as core_lookup_banco
 from brasil_mcp.core.lookups.cep import lookup_cep as core_lookup_cep
+from brasil_mcp.core.lookups.cep import lookup_endereco_cep as core_lookup_endereco_cep
 from brasil_mcp.core.lookups.cotacao import lookup_cotacao_brl as core_lookup_cotacao
 from brasil_mcp.core.lookups.ddd import lookup_ddd as core_lookup_ddd
 from brasil_mcp.core.lookups.ibge import lookup_ibge_municipio as core_lookup_ibge
@@ -39,9 +40,11 @@ from brasil_mcp.core.validators.credit_card import (
 )
 from brasil_mcp.core.validators.pis import validate_pis as core_validate_pis
 from brasil_mcp.core.validators.renavam import validate_renavam as core_validate_renavam
+from brasil_mcp.core.validators.telefone import validate_telefone as core_validate_telefone
 from brasil_mcp.core.validators.titulo_eleitor import (
     validate_titulo_eleitor as core_validate_titulo,
 )
+from brasil_mcp.core.whatsapp.qr import generate_whatsapp_qr as core_generate_whatsapp_qr
 
 
 def register_tools(mcp: FastMCP) -> None:
@@ -179,3 +182,23 @@ def register_tools(mcp: FastMCP) -> None:
         """Consulta cotação PTAX BRL via Banco Central. Moedas: USD, EUR, GBP, JPY, ARS, CHF, CAD, AUD. data_cotacao opcional (default hoje). Cacheado 1h pra recente, 1 ano pra histórico."""
         with track("lookup_cotacao_brl"):
             return core_lookup_cotacao(moeda, data_cotacao=data_cotacao)
+
+    @mcp.tool()
+    def lookup_endereco_cep(uf: str, cidade: str, logradouro: str) -> dict[str, Any]:
+        """Busca lista de CEPs por endereço (UF + cidade + logradouro) via ViaCEP (online). Aceita match parcial no logradouro. Cacheado 30 dias."""
+        with track("lookup_endereco_cep"):
+            return core_lookup_endereco_cep(uf, cidade, logradouro)
+
+    @mcp.tool()
+    def validate_telefone(value: str) -> dict[str, Any]:
+        """Valida e formata telefone brasileiro (celular 11 dígitos ou fixo 10). Aceita com/sem +55, qualquer máscara. Retorna formatted, formatted_international, e164, ddd, tipo (celular/fixo)."""
+        with track("validate_telefone"):
+            return core_validate_telefone(value).to_dict()
+
+    @mcp.tool()
+    def generate_whatsapp_qr(
+        telefone: str, mensagem: str | None = None, qr_format: str = "none"
+    ) -> dict[str, Any]:
+        """Gera link wa.me (deeplink WhatsApp) + QR opcional pra telefone brasileiro. mensagem opcional (URL-encoded). qr_format: 'none' | 'png' | 'svg' | 'both'."""
+        with track("generate_whatsapp_qr"):
+            return core_generate_whatsapp_qr(telefone, mensagem, qr_format)
